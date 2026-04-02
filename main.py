@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi import Response
 from dotenv import load_dotenv
 import os
 
@@ -46,3 +47,9 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "AgentBridge API is running", "version": "3.0.0"}
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    # Return empty response to avoid browser 404 noise when no favicon file exists.
+    return Response(status_code=204)
