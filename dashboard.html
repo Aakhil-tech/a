@@ -443,12 +443,19 @@ let allIncidents = [];
 let lastReport = null;
 
 function getBackend() {
-  const manual = document.getElementById('backendInput').value.trim().replace(/\/$/, '');
-  if (manual) return manual;
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    return window.location.origin.replace(/\/$/, '');
+  const input = document.getElementById('backendInput');
+  const manual = (input?.value || '').trim().replace(/\/$/, '');
+  const sameOrigin = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+    ? window.location.origin.replace(/\/$/, '')
+    : '';
+
+  // Safety fallback: prevent stale/cached Railway URL from being used.
+  if (/railway\.app/i.test(manual)) {
+    if (input && sameOrigin) input.value = sameOrigin;
+    return sameOrigin;
   }
-  return '';
+  if (manual) return manual;
+  return sameOrigin;
 }
 function getKey() {
   return document.getElementById('apiKeyInput').value.trim();
