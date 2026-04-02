@@ -201,7 +201,7 @@ tbody tr:hover{background:var(--s2)}
     </div>
     <div class="api-input-wrap" style="width:220px">
       <span class="api-label">backend</span>
-      <input class="api-field" id="backendInput" placeholder="auto (same origin)" style="width:180px" value="">
+      <input class="api-field" id="backendInput" placeholder="auto (same origin)" style="width:180px" value="" autocomplete="off">
     </div>
     <button class="fetch-btn" id="fetchBtn" onclick="fetchAll()">
       <span id="fetchIcon">↓</span> Fetch Data
@@ -828,11 +828,13 @@ function esc(s) {
 
 // Auto-fetch on load
 window.addEventListener('load', () => {
-  // Auto-fill backend with same-origin when app is served over HTTP(S).
+  // Force same-origin on load to avoid stale browser-restored backend URLs.
   const backendInput = document.getElementById('backendInput');
-  if (backendInput && !backendInput.value.trim()) {
+  if (backendInput) {
     if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
       backendInput.value = window.location.origin.replace(/\/$/, '');
+    } else {
+      backendInput.value = '';
     }
   }
   const key = getKey();
