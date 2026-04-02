@@ -8,9 +8,23 @@ load_dotenv()
 
 app = FastAPI(title="AgentBridge API", version="3.0.0")
 
+allowed_origins = [
+    "https://a-1-9noz.onrender.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+# Optional comma-separated override for deployed environments.
+extra_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
+if extra_origins:
+    allowed_origins.extend(
+        [origin.strip() for origin in extra_origins.split(",") if origin.strip()]
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

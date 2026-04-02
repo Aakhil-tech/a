@@ -201,7 +201,7 @@ tbody tr:hover{background:var(--s2)}
     </div>
     <div class="api-input-wrap" style="width:220px">
       <span class="api-label">backend</span>
-      <input class="api-field" id="backendInput" placeholder="https://..." style="width:180px" value="https://agentbridgebackend-production.up.railway.app">
+      <input class="api-field" id="backendInput" placeholder="auto (same origin)" style="width:180px" value="">
     </div>
     <button class="fetch-btn" id="fetchBtn" onclick="fetchAll()">
       <span id="fetchIcon">↓</span> Fetch Data
@@ -443,7 +443,12 @@ let allIncidents = [];
 let lastReport = null;
 
 function getBackend() {
-  return document.getElementById('backendInput').value.trim().replace(/\/$/, '');
+  const manual = document.getElementById('backendInput').value.trim().replace(/\/$/, '');
+  if (manual) return manual;
+  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    return window.location.origin.replace(/\/$/, '');
+  }
+  return '';
 }
 function getKey() {
   return document.getElementById('apiKeyInput').value.trim();
@@ -816,6 +821,13 @@ function esc(s) {
 
 // Auto-fetch on load
 window.addEventListener('load', () => {
+  // Auto-fill backend with same-origin when app is served over HTTP(S).
+  const backendInput = document.getElementById('backendInput');
+  if (backendInput && !backendInput.value.trim()) {
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+      backendInput.value = window.location.origin.replace(/\/$/, '');
+    }
+  }
   const key = getKey();
   if (key) fetchAll();
 });
